@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 export interface Product {
   id: number;
@@ -42,18 +42,14 @@ export const sampleProducts: Product[] = [
 export const useShoppingCart = () => {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  // Diese Funktion nutzt den funktionalen Update-Ansatz von useState,
-  // was für zuverlässige State-Updates sorgt
   const addToCart = (product: Product, quantity = 1) => {
     if (!product.inStock) return;
 
     setItems((currentItems) => {
-      // Wir suchen zuerst nach einem existierenden Item
       const existing = currentItems.find(
         (item) => item.product.id === product.id,
       );
 
-      // Wenn das Item existiert, aktualisieren wir die Menge
       if (existing) {
         return currentItems.map((item) =>
           item.product.id === product.id
@@ -61,8 +57,6 @@ export const useShoppingCart = () => {
             : item,
         );
       }
-
-      // Wenn es ein neues Item ist, fügen wir es hinzu
       return [...currentItems, { product, quantity }];
     });
   };
@@ -74,7 +68,6 @@ export const useShoppingCart = () => {
     );
   };
 
-  // Menge aktualisieren mit Sonderfall für Menge 0
   const updateQuantity = (productId: number, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
@@ -88,7 +81,6 @@ export const useShoppingCart = () => {
     );
   };
 
-  // Berechnung des Gesamtpreises
   const calculateTotal = () => {
     return items.reduce(
       (total, item) => total + item.product.price * item.quantity,
@@ -104,6 +96,8 @@ export const useShoppingCart = () => {
     calculateTotal,
   };
 };
+
+// ___________ All over this should work as intended ________________________________________________________
 
 /*
 // components/ShoppingCart.tsx
@@ -127,37 +121,34 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({ availableProducts }) => {
   // - Zeige den Gesamtpreis an
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
+    <>
+      <h1>Shopping Cart</h1>
 
-      {/* Produktliste */}
-      <div className="mb-8">
-        <h2 className="">Available Products</h2>
+      <div>
+        <h2>Available Products</h2>
         {/* TODO: Implementiere die Produktliste mit Add-to-Cart Buttons */}
         <ul>
           {availableProducts.map((product) => (
-            <li key={product.id} className="flex justify-between items-center">
+            <li key={product.id}>
               <span>
                 {product.name} - ${product.price}
               </span>
               <button
                 onClick={() => addToCart(product)}
                 disabled={!product.inStock}
-                className="bg-blue-500 text-white px-2 py-1 rounded"
               >
                 Add to Cart
               </button>
             </li>
           ))}
           {availableProducts.map((product) => (
-            <li key={product.id} className="flex justify-between items-center">
+            <li key={product.id}>
               <span>
                 {product.name} - ${product.price}
               </span>
               <button
                 onClick={() => removeFromCart(product.id)}
                 disabled={!product.inStock}
-                className="bg-blue-500 text-white px-2 py-1 rounded"
               >
                 Add to Cart
               </button>
@@ -165,17 +156,15 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({ availableProducts }) => {
           ))}
         </ul>
       </div>
-
-      {/* Warenkorb */}
       <div>
-        <h2 className="text-xl font-semibold mb-2">Your Cart</h2>
+        <h2>Your Cart</h2>
         {/* TODO: Implementiere die Warenkorbansicht */}
 
-        <div className="mt-4">
-          {/*    <strong>Total: ${calculateTotal().toFixed(2)}</strong>*/}
+        <div>
+          <strong>Total: ${calculateTotal().toFixed(2)}</strong>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
