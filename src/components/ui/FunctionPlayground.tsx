@@ -1,7 +1,6 @@
 'use client';
-import React, { useCallback, useState } from 'react';
-// types.ts
-// Grundlegende Typdefinitionen für unseren Shop
+import React, { useCallback, useEffect, useState } from 'react';
+
 export interface Product {
   id: number;
   name: string;
@@ -43,62 +42,59 @@ export const sampleProducts: Product[] = [
 export const useShoppingCart = () => {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const addToCart = useCallback((product: Product, quantity: number = 1) => {
-    if (!product.inStock) {
+  // Diese Funktion nutzt den funktionalen Update-Ansatz von useState,
+  // was für zuverlässige State-Updates sorgt
+  const addToCart = (product: Product, quantity = 1) => {
+    if (!product.inStock) return;
+
+    setItems((currentItems) => {
+      // Wir suchen zuerst nach einem existierenden Item
+      const existing = currentItems.find(
+        (item) => item.product.id === product.id,
+      );
+
+      // Wenn das Item existiert, aktualisieren wir die Menge
+      if (existing) {
+        return currentItems.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item,
+        );
+      }
+
+      // Wenn es ein neues Item ist, fügen wir es hinzu
+      return [...currentItems, { product, quantity }];
+    });
+  };
+
+  // to delete all of a item
+  const removeFromCart = (productId: number) => {
+    setItems((currentItems) =>
+      currentItems.filter((item) => item.product.id !== productId),
+    );
+  };
+
+  // Menge aktualisieren mit Sonderfall für Menge 0
+  const updateQuantity = (productId: number, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
       return;
     }
 
-    if (items.find((item) => item.product.id === product.id)) {
-      const newItems = items.map((item) => {
-        if (item.product.id === product.id) {
-          return {
-            ...item,
-            quantity: item.quantity + quantity,
-          };
-        }
-        return item;
-      });
-      setItems(newItems);
-    } else {
-      setItems([...items, { product, quantity }]);
-    }
-  }, []);
+    setItems((currentItems) =>
+      currentItems.map((item) =>
+        item.product.id === productId ? { ...item, quantity } : item,
+      ),
+    );
+  };
 
-  const removeFromCart = useCallback((productId: number) => {
-    if (items.find((item) => item.product.id === productId)) {
-      const newItems = items.filter((item) => item.product.id !== productId);
-      setItems(newItems);
-    } else {
-      return; // Todo: error message "Produkt nicht im Warenkorb"
-    }
-  }, []);
-
-  const updateQuantity = useCallback((productId: number, quantity: number) => {
-    items.map((item) => {
-      if (item.product.id === productId) {
-        if (quantity === 0) {
-          removeFromCart(productId);
-          return;
-        }
-        return {
-          ...item,
-          quantity: quantity,
-        };
-      }
-      return item;
-    });
-  }, []);
-
-  const calculateTotal = useCallback(() => {
-    /*    // Berechne den Gesamtpreis aller Produkte
-
-    // 1. Iteriere über alle Produkte im Warenkorb
-    // 2. Multipliziere den Preis mit der Menge
-    // 3. Summiere alle Preise
-    // 4. Runde das Ergebnis auf zwei Nachkommastellen
-
-    return 0;*/
-  }, [items]);
+  // Berechnung des Gesamtpreises
+  const calculateTotal = () => {
+    return items.reduce(
+      (total, item) => total + item.product.price * item.quantity,
+      0,
+    );
+  };
 
   return {
     items,
@@ -123,7 +119,7 @@ interface ShoppingCartProps {
 const ShoppingCart: React.FC<ShoppingCartProps> = ({ availableProducts }) => {
   const { items, addToCart, removeFromCart, updateQuantity, calculateTotal } =
     useShoppingCart();
-  console.log(availableProducts);
+  console.log(availableProducts, items);
   // TODO: Implementiere das UI
   // - Liste verfügbare Produkte auf
   // - Zeige den Warenkorb mit allen Produkten und Mengen
@@ -153,6 +149,20 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({ availableProducts }) => {
               </button>
             </li>
           ))}
+          {availableProducts.map((product) => (
+            <li key={product.id} className="flex justify-between items-center">
+              <span>
+                {product.name} - ${product.price}
+              </span>
+              <button
+                onClick={() => removeFromCart(product.id)}
+                disabled={!product.inStock}
+                className="bg-blue-500 text-white px-2 py-1 rounded"
+              >
+                Add to Cart
+              </button>
+            </li>
+          ))}
         </ul>
       </div>
 
@@ -170,7 +180,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({ availableProducts }) => {
 };
 
 const FunctionPlayground = () => {
-  return <></> /*<ShoppingCart availableProducts={sampleProducts} />*/;
+  return <ShoppingCart availableProducts={sampleProducts} />;
 };
 
 export default FunctionPlayground;
