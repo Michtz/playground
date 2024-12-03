@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 export interface Product {
   id: number;
@@ -39,8 +39,21 @@ export const sampleProducts: Product[] = [
   },
 ];
 
-export const useShoppingCart = () => {
+interface UseShoppingCartProps {
+  items: CartItem[];
+  addToCart: (product: Product, quantity: number) => void;
+  deleteItemFromCart: (productId: number) => void;
+  updateQuantity: (productId: number, quantity: number) => void;
+  calculateTotal: () => number;
+  getItems: () => CartItem[];
+}
+
+export const useShoppingCart = (): UseShoppingCartProps => {
   const [items, setItems] = useState<CartItem[]>([]);
+
+  const getItems = (): CartItem[] => {
+    return items;
+  };
 
   const addToCart = (product: Product, quantity = 1) => {
     if (!product.inStock) return;
@@ -61,8 +74,7 @@ export const useShoppingCart = () => {
     });
   };
 
-  // to delete all of a item
-  const removeFromCart = (productId: number) => {
+  const deleteItemFromCart = (productId: number) => {
     setItems((currentItems) =>
       currentItems.filter((item) => item.product.id !== productId),
     );
@@ -70,7 +82,7 @@ export const useShoppingCart = () => {
 
   const updateQuantity = (productId: number, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      deleteItemFromCart(productId);
       return;
     }
 
@@ -91,9 +103,10 @@ export const useShoppingCart = () => {
   return {
     items,
     addToCart,
-    removeFromCart,
+    deleteItemFromCart,
     updateQuantity,
     calculateTotal,
+    getItems,
   };
 };
 
@@ -107,47 +120,50 @@ import { useShoppingCart } from './hooks/useShoppingCart';
 */
 
 interface ShoppingCartProps {
-  availableProducts: Product[];
+  products: Product[];
 }
 
-const ShoppingCart: React.FC<ShoppingCartProps> = ({ availableProducts }) => {
-  const { items, addToCart, removeFromCart, updateQuantity, calculateTotal } =
-    useShoppingCart();
-  console.log(availableProducts, items);
-  // TODO: Implementiere das UI
-  // - Liste verfügbare Produkte auf
-  // - Zeige den Warenkorb mit allen Produkten und Mengen
-  // - Füge Buttons zum Hinzufügen/Entfernen/Aktualisieren hinzu
-  // - Zeige den Gesamtpreis an
+const ShoppingCartContainer: React.FC<ShoppingCartProps> = ({ products }) => {
+  const {
+    items,
+    addToCart,
+    deleteItemFromCart,
+    updateQuantity,
+    calculateTotal,
+    getItems,
+  } = useShoppingCart();
 
   return (
     <>
       <h1>Shopping Cart</h1>
 
       <div>
-        <h2>Available Products</h2>
+        {items.map((item) => (
+          <div
+            style={{
+              padding: '10px 60px',
+              margin: '10px',
+              width: '80%',
+              border: '1px solid white',
+            }}
+            key={item.product.id}
+          >
+            <span style={{ display: 'inline-block' }}>
+              <h2>{item.product.name}</h2>
+              <p children={item.product.price} />
+            </span>
+            <p>{item.quantity}</p>
+          </div>
+        ))}
         {/* TODO: Implementiere die Produktliste mit Add-to-Cart Buttons */}
         <ul>
-          {availableProducts.map((product) => (
+          {products.map((product) => (
             <li key={product.id}>
               <span>
                 {product.name} - ${product.price}
               </span>
               <button
-                onClick={() => addToCart(product)}
-                disabled={!product.inStock}
-              >
-                Add to Cart
-              </button>
-            </li>
-          ))}
-          {availableProducts.map((product) => (
-            <li key={product.id}>
-              <span>
-                {product.name} - ${product.price}
-              </span>
-              <button
-                onClick={() => removeFromCart(product.id)}
+                onClick={() => addToCart(product, 1)}
                 disabled={!product.inStock}
               >
                 Add to Cart
@@ -169,7 +185,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({ availableProducts }) => {
 };
 
 const FunctionPlayground = () => {
-  return <ShoppingCart availableProducts={sampleProducts} />;
+  return <ShoppingCartContainer products={sampleProducts} />;
 };
 
 export default FunctionPlayground;
