@@ -1,19 +1,11 @@
-import { BaseStyles, ThemeProvider } from '@primer/react';
-import React, { ReactElement, ReactNode } from 'react';
-import { NextPage } from 'next';
-import { AppProps } from 'next/app';
+import { BaseStyles, Button, ThemeProvider } from '@primer/react';
+import React from 'react';
 
-interface AppPropsWithLayout extends AppProps {
-  Component: NextPage & {
-    getLayout?: (page: ReactElement) => ReactNode;
-  };
-}
-
-const Home: React.FC<AppPropsWithLayout> = ({ Component, pageProps }) => {
+const Home: React.FC = () => {
   return (
     <ThemeProvider>
       <BaseStyles>
-        <Component {...pageProps} />
+        <Button>Click me</Button>
       </BaseStyles>
     </ThemeProvider>
   );
