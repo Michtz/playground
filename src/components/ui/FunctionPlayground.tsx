@@ -137,7 +137,7 @@ const ShoppingCartContainer: React.FC<ShoppingCartProps> = ({ products }) => {
     <>
       <h1>Shopping Cart</h1>
 
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         {items.map((item) => (
           <div
             style={{
