@@ -19,6 +19,7 @@ const CodeExerciseDisplayContainer: React.FC<Task> = ({
         <Heading>{content.header}</Heading>
         <Text>{content.text}</Text>
       </Box>
+      <Heading width={'md'}>Example return:</Heading>
       <Code
         as="pre"
         display="block"
@@ -31,6 +32,7 @@ const CodeExerciseDisplayContainer: React.FC<Task> = ({
       >
         {content.exampleReturn}
       </Code>
+      <Heading width={'md'}>Example data:</Heading>
       <Code
         as="pre"
         display="block"
@@ -43,7 +45,7 @@ const CodeExerciseDisplayContainer: React.FC<Task> = ({
       >
         {JSON.stringify(data)}
       </Code>
-
+      <Heading width={'md'}>My solution:</Heading>
       <Code
         as="pre"
         display="block"
@@ -60,18 +62,21 @@ const CodeExerciseDisplayContainer: React.FC<Task> = ({
         test the function
       </Button>
       {functionReturn && (
-        <Code
-          as="pre"
-          display="block"
-          p={6}
-          borderRadius="md"
-          fontSize="sm"
-          bg="green.50"
-          width="auto"
-          maxW="600px"
-        >
-          {functionReturn}
-        </Code>
+        <>
+          <Heading width={'md'}>Test result:</Heading>
+          <Code
+            as="pre"
+            display="block"
+            p={6}
+            borderRadius="md"
+            fontSize="sm"
+            bg="green.50"
+            width="auto"
+            maxW="600px"
+          >
+            {functionReturn}
+          </Code>
+        </>
       )}
     </VStack>
   );
