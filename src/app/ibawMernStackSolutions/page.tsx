@@ -25,6 +25,12 @@ const Home = (): JSX.Element => {
     { element: <ThirdExercise />, id: 'thirdElement' },
   ];*/
 
+  /* der Teil ist für die abgabe --------------------------
+  Ich habe aber den separaten express server auf port 3001 sein lassen
+  (finden sie unter /server/server.js und das "index.html" ist /public/staticIbaw.html)
+ 
+   */
+
   const continents = ['Africa', 'America', 'Asia', 'Australia', 'Europe'];
   const helloContinents = Array.from(continents, (c) => `Hello ${c}!`);
   const message = helloContinents.join('');
