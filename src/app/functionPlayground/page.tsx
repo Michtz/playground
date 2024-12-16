@@ -2,7 +2,7 @@
 
 import { useExercises } from '@/utils/ExerciseHook';
 import { FC, ReactNode } from 'react';
-import DisplayTask from '@/components/CodeExerciseDisplayContainer';
+import DisplayTask from '@/components/uiForCodeExercises/CodeExerciseDisplayContainer';
 
 interface Props {
   children?: ReactNode;

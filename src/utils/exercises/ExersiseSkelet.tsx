@@ -5,8 +5,6 @@ import { Content } from '@/utils/exercises/types';
 
 interface InputData {}
 
-interface Validations {}
-
 interface Result {}
 
 const solutionFn = (data: InputData[]): string => {
@@ -24,20 +22,10 @@ const data: InputData[] = [];
 
 // beschreibung und content der aufgabe
 const content: Content = {
-  id: 'exercise-id',
+  id: 'exerciseId',
   header: 'Übungstitel',
-  text: `Beschreibung der Aufgabe:
-
-        1. Erster Anforderungspunkt
-        2. ....
-        3. ....
-
-         Zusätzliche Informationen:
-         - Wichtiger Hinweis 1
-         - Wichtiger Hinweis 2`,
-  exampleReturn: `{
-    // Hier kommt ein Beispiel für die erwartete Ausgabe
-  }`,
+  text: `Beschreibung der Aufgabe:`,
+  exampleReturn: `Hier kommt ein Beispiel für die erwartete Ausgabe`,
 };
 
 // muss genau so exportiert werden !!! ACHTUNG !!!

@@ -1,4 +1,4 @@
-import ShopPlayground from '@/components/ui/ShopPlayground';
+import ShopPlayground from '@/components/shopPlayground/ShopPlayground';
 
 const Home = () => <ShopPlayground />;
 export default Home;
